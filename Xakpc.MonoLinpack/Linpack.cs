@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace Xakpc.MonoLinpack.Core
 {
@@ -15,7 +11,7 @@ namespace Xakpc.MonoLinpack.Core
 
 		static T[][] CreateArray<T>(int rows, int cols)
 		{
-			T[][] array = new T[rows][];
+			var array = new T[rows][];
 			for (int i = 0; i < array.GetLength(0); i++)
 				array[i] = new T[cols];
 
@@ -24,41 +20,46 @@ namespace Xakpc.MonoLinpack.Core
 
 		// problem size = psize x psize
 		private const int DEFAULT_PSIZE = 500;
-		double mflops_result = 0.0;
-		double residn_result = 0.0;
-		string time_result;
-		double eps_result = 0.0;
+		double _mflopsResult = 0.0;
+		double _residnResult = 0.0;
+		string _timeResult;
+		double _epsResult = 0.0;
 
 		public void RunBenchmark()
 		{
-			int n, i, ntimes, info, lda, ldaa, kflops;
-			double cray, ops, total, norma, normx;
+			int n;
+		    int i;
+		    int ntimes;
+		    int info;
+		    int lda;
+		    int ldaa;
+		    int kflops;
+		    double cray;
+		    double ops;
+		    double total;
+		    double norma;
+		    double normx;
 
-			cray = .056;
+		    cray = .056;
 
 			n = DEFAULT_PSIZE;//100;
 			lda = DEFAULT_PSIZE+1;
 			ldaa = DEFAULT_PSIZE;
 
-			double[][] a = CreateArray<double>(ldaa, lda);
-			double[] b = new double[ldaa];
-			double[] x = new double[ldaa];
+			var a = CreateArray<double>(ldaa, lda);
+			var b = new double[ldaa];
+			var x = new double[ldaa];
 		   
 			double resid, time;
 			double kf;
 
-			int[] ipvt = new int[ldaa];
+			var ipvt = new int[ldaa];
 
-			//double mflops_result;
-			//double residn_result;
-			//double time_result;
-			//double eps_result;
-
-			ops = (2.0e0 * (n * n * n)) / 3.0 + 2.0 * (n * n);
+            ops = (2.0e0 * (n * n * n)) / 3.0 + 2.0 * (n * n);
 
 			norma = matgen(a, lda, n, b);
 
-			Stopwatch sw = new Stopwatch();
+			var sw = new Stopwatch();
 			sw.Reset();
 			sw.Start();
 			// измерение тут
@@ -68,16 +69,12 @@ namespace Xakpc.MonoLinpack.Core
 
 			total = sw.ElapsedMilliseconds / 1000.0;
 
-			for (i = 0; i < n; i++)
-			{
-				x[i] = b[i];
-			}
-			norma = matgen(a, lda, n, b);
-			for (i = 0; i < n; i++)
-			{
-				b[i] = -b[i];
-			}
-			dmxpy(n, b, n, lda, x, a);
+		    for (i = 0; i < n; i++)
+		        x[ i ] = b[ i ];
+		    norma = matgen(a, lda, n, b);
+		    for (i = 0; i < n; i++)
+		        b[ i ] = -b[ i ];
+		    dmxpy(n, b, n, lda, x, a);
 			resid = 0.0;
 			normx = 0.0;
 			for (i = 0; i < n; i++)
@@ -87,52 +84,43 @@ namespace Xakpc.MonoLinpack.Core
 			}
 
 		  
-			eps_result = epslon((double)1.0);
- /* 
-			residn_result = resid / (n * norma * normx * eps_result);
-			mflops_result = ops / (1.0e6 * sw.ElapsedMilliseconds);
+			this._epsResult = epslon(1.0);
+			this._residnResult = resid / (n * norma * normx * this._epsResult);
+			this._residnResult += 0.005;
+			this._residnResult = (int)(this._residnResult * 100);
+			this._residnResult /= 100;
 
-			Debug.WriteLine("flops/s: " + mflops_result*1000 +
-				"  Time: " + sw.Elapsed.ToString() +
-				"  Norm Res: " + residn_result +
-				"  Precision: " + eps_result);*/
+			this._timeResult = sw.Elapsed.ToString();
 
-			residn_result = resid / (n * norma * normx * eps_result);
-			residn_result += 0.005; // for rounding
-			residn_result = (int)(residn_result * 100);
-			residn_result /= 100;
+			this._mflopsResult = ops / (1.0e6 * total);
+			this._mflopsResult += 0.0005; // for rounding
+			this._mflopsResult = (int)(this._mflopsResult * 1000);
+			this._mflopsResult /= 1000;
 
-			time_result = sw.Elapsed.ToString();
-
-			mflops_result = ops / (1.0e6 * total);
-			mflops_result += 0.0005; // for rounding
-			mflops_result = (int)(mflops_result * 1000);
-			mflops_result /= 1000;
-
-			Debug.WriteLine("Mflops/s: " + mflops_result +
-				"  Time: " + time_result +
-				"  Norm Res: " + residn_result +
-				"  Precision: " + eps_result);
+			Debug.WriteLine("Mflops/s: " + this._mflopsResult +
+				"  Time: " + this._timeResult +
+				"  Norm Res: " + this._residnResult +
+				"  Precision: " + this._epsResult);
 		}
 
 		public double MFlops
 		{
-			get { return mflops_result; }
+			get { return this._mflopsResult; }
 		}
 
 		public double ResIDN
 		{
-			get { return residn_result; }
+			get { return this._residnResult; }
 		}
 
 		public string Time
 		{
-			get { return time_result; }
+			get { return this._timeResult; }
 		}
 
 		public double Eps
 		{
-			get { return eps_result; }
+			get { return this._epsResult; }
 		}
 
 

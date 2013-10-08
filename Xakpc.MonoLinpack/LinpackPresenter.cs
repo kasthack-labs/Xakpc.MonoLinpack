@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Xakpc.MonoLinpack.Core
 {
@@ -17,13 +13,13 @@ namespace Xakpc.MonoLinpack.Core
 
         public async Task CalculateAsync()
         {
-            Linpack l = new Linpack();
+            var l = new Linpack();
             await Task.Factory.StartNew(l.RunBenchmark);
 
             _view.Mflops = l.MFlops;
             _view.NormRes = l.ResIDN;
             _view.Precision = l.Eps;
-            _view.Time = l.Time.ToString();
+            _view.Time = l.Time;
         }
     }
 }

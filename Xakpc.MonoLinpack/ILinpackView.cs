@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Xakpc.MonoLinpack.Core
+﻿namespace Xakpc.MonoLinpack.Core
 {
     public interface ILinpackView
     {
