@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Xakpc.MonoLinpack.Core.LinpackPresenter">
+    <Position X="5.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAACAAAAAAAAA=</HashCode>
+      <FileName>LinpackPresenter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="Xakpc.MonoLinpack.Core.ILinpackView">
+    <Position X="3.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgEAAAAAAAAEQA=</HashCode>
+      <FileName>ILinpackView.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

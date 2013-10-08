@@ -1,0 +1,7 @@
+syntax: glob
+bin/Debug/KandidIter1.vshost.exe
+bin/Debug/IN
+bin/*
+obj/*
+packages/*
+*.apk

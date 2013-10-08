@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xakpc.MonoLinpack.Core", "Xakpc.MonoLinpack\Xakpc.MonoLinpack.Core.csproj", "{3DA9D415-E6C9-4F71-8AFD-B06375036A94}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{462EB4CB-8D02-4F77-B001-8D726C3FBAD0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Platforms", "Platforms", "{A6008AC6-3047-489E-B792-6EB19A6A309F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{7D31116D-19BE-4CAC-BD38-E193B9BB9EC7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xakpc.MonoLinpack.Core.Test", "Xakpc.MonoLinpack.Core.Test\Xakpc.MonoLinpack.Core.Test.csproj", "{57DF4EC9-9903-4300-B976-5B1B27CF55A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xakpc.MonoLinpack.Core.Droid", "Xakpc.MonoLinpack.Core.Droid\Xakpc.MonoLinpack.Core.Droid.csproj", "{6741D8C7-FB2A-4315-B183-DF3F5AAA7647}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xakpc.MonoLinpack.Droid", "Xakpc.MonoLinpack.Droid\Xakpc.MonoLinpack.Droid.csproj", "{F8EEE5E4-981C-4FE6-8640-11F09127160D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3DA9D415-E6C9-4F71-8AFD-B06375036A94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DA9D415-E6C9-4F71-8AFD-B06375036A94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DA9D415-E6C9-4F71-8AFD-B06375036A94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DA9D415-E6C9-4F71-8AFD-B06375036A94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57DF4EC9-9903-4300-B976-5B1B27CF55A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57DF4EC9-9903-4300-B976-5B1B27CF55A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57DF4EC9-9903-4300-B976-5B1B27CF55A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57DF4EC9-9903-4300-B976-5B1B27CF55A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6741D8C7-FB2A-4315-B183-DF3F5AAA7647}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6741D8C7-FB2A-4315-B183-DF3F5AAA7647}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6741D8C7-FB2A-4315-B183-DF3F5AAA7647}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6741D8C7-FB2A-4315-B183-DF3F5AAA7647}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8EEE5E4-981C-4FE6-8640-11F09127160D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8EEE5E4-981C-4FE6-8640-11F09127160D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8EEE5E4-981C-4FE6-8640-11F09127160D}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{F8EEE5E4-981C-4FE6-8640-11F09127160D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8EEE5E4-981C-4FE6-8640-11F09127160D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8EEE5E4-981C-4FE6-8640-11F09127160D}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3DA9D415-E6C9-4F71-8AFD-B06375036A94} = {462EB4CB-8D02-4F77-B001-8D726C3FBAD0}
+		{6741D8C7-FB2A-4315-B183-DF3F5AAA7647} = {462EB4CB-8D02-4F77-B001-8D726C3FBAD0}
+		{F8EEE5E4-981C-4FE6-8640-11F09127160D} = {A6008AC6-3047-489E-B792-6EB19A6A309F}
+		{57DF4EC9-9903-4300-B976-5B1B27CF55A8} = {7D31116D-19BE-4CAC-BD38-E193B9BB9EC7}
+	EndGlobalSection
+EndGlobal
