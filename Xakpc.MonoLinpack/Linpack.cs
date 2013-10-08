@@ -268,14 +268,19 @@ namespace Xakpc.MonoLinpack.Core
 				double[] dy, int dy_off, int incy)
 		{
 			int i, ix, iy;
-		    if ( ( n <= 0 ) || ( da == 0 ) ) return;
+		    if ( n <= 0 || da == 0 ) return;
 		    if ( incx == 1 && incy == 1 ){
                 fixed (double* dyp = dy) {
                     fixed ( double* dxp = dx ) {
+                        var dypstart = dyp + dy_off;
+                        var dypend = dypstart+n;
                         var dypw = dyp + dy_off;
                         var dxpw = dxp + dx_off;
-                        for (i = 0; i < n; i++)
-                            *(dypw++) += da * *(dxpw++);
+                        while(dypw<dypend){
+                            *dypw += da * *dxpw;
+                            ++dxpw;
+                            ++dypw;
+                        }
                     }
                 }
 		        return;
