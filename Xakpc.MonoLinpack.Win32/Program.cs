@@ -1,12 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
+using Xakpc.MonoLinpack.Core;
 
 namespace Xakpc.MonoLinpack.Win32 {
-    class Program {
-        static void Main( string[] args ) {
+    static class Program {
+        static void Main() {
+            Debug.Listeners.Add(new ConsoleTraceListener());
+            for (var i=0;i<100;i++){
+                var lp = new Linpack();
+                lp.RunBenchmark();
+                Console.WriteLine("Mflops/s: " + lp.MFlops +
+                                  "  Time: " + lp.Time +
+                                  "  Norm Res: " + lp.ResIDN +
+                                  "  Precision: " + lp.Eps);
+            }
         }
     }
 }

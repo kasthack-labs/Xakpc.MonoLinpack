@@ -20,63 +20,47 @@ namespace Xakpc.MonoLinpack.Core
 
 		// problem size = psize x psize
 		private const int DEFAULT_PSIZE = 500;
-		double _mflopsResult = 0.0;
-		double _residnResult = 0.0;
+		double _mflopsResult;
+		double _residnResult;
 		string _timeResult;
-		double _epsResult = 0.0;
+		double _epsResult;
 
 		public void RunBenchmark()
 		{
-			int n;
 		    int i;
-		    int ntimes;
-		    int info;
-		    int lda;
-		    int ldaa;
-		    int kflops;
-		    double cray;
-		    double ops;
-		    double total;
-		    double norma;
-		    double normx;
 
-		    cray = .056;
-
-			n = DEFAULT_PSIZE;//100;
-			lda = DEFAULT_PSIZE+1;
-			ldaa = DEFAULT_PSIZE;
+		    const int n = DEFAULT_PSIZE;
+			const int lda = DEFAULT_PSIZE+1;
+			const int ldaa = DEFAULT_PSIZE;
+            const double ops = (2.0e0 * (n * n * n)) / 3.0 + 2.0 * (n * n);
 
 			var a = CreateArray<double>(ldaa, lda);
+
 			var b = new double[ldaa];
 			var x = new double[ldaa];
-		   
-			double resid, time;
-			double kf;
+		    var ipvt = new int[ldaa];
 
-			var ipvt = new int[ldaa];
-
-            ops = (2.0e0 * (n * n * n)) / 3.0 + 2.0 * (n * n);
-
-			norma = matgen(a, lda, n, b);
+            
+			Matgen(a, n, b);
 
 			var sw = new Stopwatch();
 			sw.Reset();
 			sw.Start();
-			// измерение тут
-			info = dgefa(a, lda, n, ipvt);
-			dgesl(a, lda, n, ipvt, b, 0);
-			sw.Stop();
 
-			total = sw.ElapsedMilliseconds / 1000.0;
+			this.dgefa(a, lda, n, ipvt);
+			this.Dgesl(a, n, ipvt, b, 0);
+			
+            sw.Stop();
 
-		    for (i = 0; i < n; i++)
+			var total = sw.ElapsedMilliseconds / 1000.0;
+            for (i = 0; i < n; i++)
 		        x[ i ] = b[ i ];
-		    norma = matgen(a, lda, n, b);
+		    var norma = Matgen(a, n, b);
 		    for (i = 0; i < n; i++)
 		        b[ i ] = -b[ i ];
 		    dmxpy(n, b, n, lda, x, a);
-			resid = 0.0;
-			normx = 0.0;
+			var resid = 0.0;
+			var normx = 0.0;
 			for (i = 0; i < n; i++)
 			{
 				resid = (resid > abs(b[i])) ? resid : abs(b[i]);
@@ -97,10 +81,10 @@ namespace Xakpc.MonoLinpack.Core
 			this._mflopsResult = (int)(this._mflopsResult * 1000);
 			this._mflopsResult /= 1000;
 
-			Debug.WriteLine("Mflops/s: " + this._mflopsResult +
-				"  Time: " + this._timeResult +
-				"  Norm Res: " + this._residnResult +
-				"  Precision: " + this._epsResult);
+            //Debug.WriteLine("Mflops/s: " + this._mflopsResult +
+            //    "  Time: " + this._timeResult +
+            //    "  Norm Res: " + this._residnResult +
+            //    "  Precision: " + this._epsResult);
 		}
 
 		public double MFlops
@@ -123,15 +107,12 @@ namespace Xakpc.MonoLinpack.Core
 			get { return this._epsResult; }
 		}
 
-
-
-		double matgen(double[][] a, int lda, int n, double[] b)
+	    static double Matgen(double[][] a, int n, double[] b)
 		{
-			double norma;
-			int init, i, j;
+		    int i, j;
 
-			init = 1325;
-			norma = 0.0;
+			var init = 1325;
+			var norma = 0.0;
 			/*  Next two for() statements switched.  Solver wants
 			matrix in column order. --dmd 3/3/97
 			*/
@@ -158,52 +139,6 @@ namespace Xakpc.MonoLinpack.Core
 
 			return norma;
 		}
-
-
-		/*
-		  dgefa factors a double precision matrix by gaussian elimination.
-	
-		  dgefa is usually called by dgeco, but it can be called
-		  directly with a saving in time if  rcond  is not needed.
-		  (time for dgeco) = (1 + 9/n)*(time for dgefa) .
-	
-		  on entry
-	
-		  a       double precision[n][lda]
-		  the matrix to be factored.
-	
-		  lda     integer
-		  the leading dimension of the array  a .
-	
-		  n       integer
-		  the order of the matrix  a .
-	
-		  on return
-	
-		  a       an upper triangular matrix and the multipliers
-		  which were used to obtain it.
-		  the factorization can be written  a = l*u  where
-		  l  is a product of permutation and unit lower
-		  triangular matrices and  u  is upper triangular.
-	
-		  ipvt    integer[n]
-		  an integer vector of pivot indices.
-	
-		  info    integer
-		  = 0  normal value.
-		  = k  if  u[k][k] .eq. 0.0 .  this is not an error
-		  condition for this subroutine, but it does
-		  indicate that dgesl or dgedi will divide by zero
-		  if called.  use  rcond  in dgeco for a reliable
-		  indication of singularity.
-	
-		  linpack. this version dated 08/14/78.
-		  cleve moler, university of new mexico, argonne national lab.
-	
-		  functions
-	
-		  blas daxpy,dscal,idamax
-		*/
 		int dgefa(double[][] a, int lda, int n, int[] ipvt)
 		{
 			double[] col_k, col_j;
@@ -272,75 +207,15 @@ namespace Xakpc.MonoLinpack.Core
 
 			return info;
 		}
-
-
-
-		/*
-		  dgesl solves the double precision system
-		  a * x = b  or  trans(a) * x = b
-		  using the factors computed by dgeco or dgefa.
-  
-		  on entry
-  
-		  a       double precision[n][lda]
-		  the output from dgeco or dgefa.
-  
-		  lda     integer
-		  the leading dimension of the array  a .
-	
-		  n       integer
-		  the order of the matrix  a .
-  
-		  ipvt    integer[n]
-		  the pivot vector from dgeco or dgefa.
-
-		  b       double precision[n]
-		  the right hand side vector.
-	
-		  job     integer
-		  = 0         to solve  a*x = b ,
-		  = nonzero   to solve  trans(a)*x = b  where
-		  trans(a)  is the transpose.
-	
-		  on return
-	
-		  b       the solution vector  x .
-	
-		  error condition
-	
-		  a division by zero will occur if the input factor contains a
-		  zero on the diagonal.  technically this indicates singularity
-		  but it is often caused by improper arguments or improper
-		  setting of lda .  it will not occur if the subroutines are
-		  called correctly and if dgeco has set rcond .gt. 0.0
-		  or dgefa has set info .eq. 0 .
-	
-		  to compute  inverse(a) * c  where  c  is a matrix
-		  with  p  columns
-		  dgeco(a,lda,n,ipvt,rcond,z)
-		  if (!rcond is too small){
-		  for (j=0,j<p,j++)
-		  dgesl(a,lda,n,ipvt,c[j][0],0);
-		  }
-	
-		  linpack. this version dated 08/14/78 .
-		  cleve moler, university of new mexico, argonne national lab.
-	
-		  functions
-	
-		  blas daxpy,ddot
-		*/
-		void dgesl(double[][] a, int lda, int n, int[] ipvt, double[] b, int job)
+		void Dgesl(double[][] a, int n, int[] ipvt, double[] b, int job)
 		{
 			double t;
-			int k, kb, l, nm1, kp1;
+			int k, kb, l,
+			    kp1;
 
-			nm1 = n - 1;
+			int nm1 = n - 1;
 			if (job == 0)
 			{
-
-				// job = 0 , solve  a * x = b.  first solve  l*y = b
-
 				if (nm1 >= 1)
 				{
 					for (k = 0; k < nm1; k++)
@@ -356,9 +231,6 @@ namespace Xakpc.MonoLinpack.Core
 						daxpy(n - (kp1), t, a[k], kp1, 1, b, kp1, 1);
 					}
 				}
-
-				// now solve  u*x = y
-
 				for (kb = 0; kb < n; kb++)
 				{
 					k = n - (kb + 1);
@@ -369,17 +241,11 @@ namespace Xakpc.MonoLinpack.Core
 			}
 			else
 			{
-
-				// job = nonzero, solve  trans(a) * x = b.  first solve  trans(u)*y = b
-
 				for (k = 0; k < n; k++)
 				{
 					t = ddot(k, a[k], 0, 1, b, 0, 1);
 					b[k] = (b[k] - t) / a[k][k];
 				}
-
-				// now solve trans(l)*x = y 
-
 				if (nm1 >= 1)
 				{
 					for (kb = 1; kb < nm1; kb++)
@@ -398,54 +264,32 @@ namespace Xakpc.MonoLinpack.Core
 				}
 			}
 		}
-
-
-
-		/*
-		  constant times a vector plus a vector.
-		  jack dongarra, linpack, 3/11/78.
-		*/
-		void daxpy(int n, double da, double[] dx, int dx_off, int incx,
+		unsafe void daxpy(int n, double da, double[] dx, int dx_off, int incx,
 				double[] dy, int dy_off, int incy)
 		{
 			int i, ix, iy;
-
-			if ((n > 0) && (da != 0))
-			{
-				if (incx != 1 || incy != 1)
-				{
-
-					// code for unequal increments or equal increments not equal to 1
-
-					ix = 0;
-					iy = 0;
-					if (incx < 0) ix = (-n + 1) * incx;
-					if (incy < 0) iy = (-n + 1) * incy;
-					for (i = 0; i < n; i++)
-					{
-						dy[iy + dy_off] += da * dx[ix + dx_off];
-						ix += incx;
-						iy += incy;
-					}
-					return;
-				}
-				else
-				{
-
-					// code for both increments equal to 1
-
-					for (i = 0; i < n; i++)
-						dy[i + dy_off] += da * dx[i + dx_off];
-				}
-			}
+		    if ( ( n <= 0 ) || ( da == 0 ) ) return;
+		    if ( incx == 1 && incy == 1 ){
+                fixed (double* dyp = dy) {
+                    fixed ( double* dxp = dx ) {
+                        var dypw = dyp + dy_off;
+                        var dxpw = dxp + dx_off;
+                        for (i = 0; i < n; i++)
+                            *(dypw++) += da * *(dxpw++);
+                    }
+                }
+		        return;
+		    }
+		    ix = 0;
+		    iy = 0;
+		    if ( incx < 0 ) ix = ( -n + 1 ) * incx;
+		    if ( incy < 0 ) iy = ( -n + 1 ) * incy;
+		    for (i = 0; i < n; i++) {
+		        dy[ iy + dy_off ] += da * dx[ ix + dx_off ];
+		        ix += incx;
+		        iy += incy;
+		    }
 		}
-
-
-
-		/*
-		  forms the dot product of two vectors.
-		  jack dongarra, linpack, 3/11/78.
-		*/
 		double ddot(int n, double[] dx, int dx_off, int incx, double[] dy,
 				 int dy_off, int incy)
 		{
@@ -459,9 +303,6 @@ namespace Xakpc.MonoLinpack.Core
 
 				if (incx != 1 || incy != 1)
 				{
-
-					// code for unequal increments or equal increments not equal to 1
-
 					ix = 0;
 					iy = 0;
 					if (incx < 0) ix = (-n + 1) * incx;
@@ -475,22 +316,12 @@ namespace Xakpc.MonoLinpack.Core
 				}
 				else
 				{
-
-					// code for both increments equal to 1
-
 					for (i = 0; i < n; i++)
 						dtemp += dx[i + dx_off] * dy[i + dy_off];
 				}
 			}
 			return (dtemp);
 		}
-
-
-
-		/*
-		  scales a vector by a constant.
-		  jack dongarra, linpack, 3/11/78.
-		*/
 		void dscal(int n, double da, double[] dx, int dx_off, int incx)
 		{
 			int i, nincx;
@@ -499,30 +330,17 @@ namespace Xakpc.MonoLinpack.Core
 			{
 				if (incx != 1)
 				{
-
-					// code for increment not equal to 1
-
 					nincx = n * incx;
 					for (i = 0; i < nincx; i += incx)
 						dx[i + dx_off] *= da;
 				}
 				else
 				{
-
-					// code for increment equal to 1
-
 					for (i = 0; i < n; i++)
 						dx[i + dx_off] *= da;
 				}
 			}
 		}
-
-
-
-		/*
-		  finds the index of element having max. absolute value.
-		  jack dongarra, linpack, 3/11/78.
-		*/
 		int idamax(int n, double[] dx, int dx_off, int incx)
 		{
 			double dmax, dtemp;
@@ -573,38 +391,6 @@ namespace Xakpc.MonoLinpack.Core
 			}
 			return (itemp);
 		}
-
-
-
-		/*
-		  estimate unit roundoff in quantities of size x.
-	
-		  this program should function properly on all systems
-		  satisfying the following two assumptions,
-		  1.  the base used in representing dfloating point
-		  numbers is not a power of three.
-		  2.  the quantity  a  in statement 10 is represented to
-		  the accuracy used in dfloating point variables
-		  that are stored in memory.
-		  the statement number 10 and the go to 10 are intended to
-		  force optimizing compilers to generate code satisfying
-		  assumption 2.
-		  under these assumptions, it should be true that,
-		  a  is not exactly equal to four-thirds,
-		  b  has a zero for its last bit or digit,
-		  c  is not exactly equal to one,
-		  eps  measures the separation of 1.0 from
-		  the next larger dfloating point number.
-		  the developers of eispack would appreciate being informed
-		  about any systems where these assumptions do not hold.
-	
-		  *****************************************************************
-		  this routine is one of the auxiliary routines used by eispack iii
-		  to avoid machine dependencies.
-		  *****************************************************************
-  
-		  this version dated 4/6/83.
-		*/
 		double epslon(double x)
 		{
 			double a, b, c, eps;
@@ -619,30 +405,6 @@ namespace Xakpc.MonoLinpack.Core
 			}
 			return (eps * abs(x));
 		}
-
-
-
-		/*
-		  purpose:
-		  multiply matrix m times vector x and add the result to vector y.
-	
-		  parameters:
-	
-		  n1 integer, number of elements in vector y, and number of rows in
-		  matrix m
-	
-		  y double [n1], vector of length n1 to which is added
-		  the product m*x
-	
-		  n2 integer, number of elements in vector x, and number of columns
-		  in matrix m
-	
-		  ldm integer, leading dimension of array m
-	
-		  x double [n2], vector of length n2
-	
-		  m double [ldm][n2], matrix of n1 rows and n2 columns
-		*/
 		void dmxpy(int n1, double[] y, int n2, int ldm, double[] x, double[][] m)
 		{
 			int j, i;
